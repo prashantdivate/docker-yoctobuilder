@@ -1,0 +1,25 @@
+name: Docker-yoctobuilder CI for GHCR
+
+on:
+  push
+
+env:
+  # Use docker.io for Docker Hub
+  REGISTRY: ghcr.io
+  IMAGE_NAME: yoctobuilder
+  IMAGE_TAG: 22.04
+
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      # Set up BuildKit Docker container builder to be able to build multi-platform images and export cache
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
+      - name: build and push the image
+        run: |
+          docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
+          docker buildx build . --file Dockerfile --tag ${{ REGISTRY}}/${{ github.actor }}/${{ IMAGE_NAME }}:${{ IMAGE_TAG }}
