@@ -15,4 +15,5 @@ jobs:
       - name: build and push the image
         run: |
           docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
-          docker buildx build . --file Dockerfile --tag ghcr.io/prashantdivate/yoctobuilder:22.04
+          docker buildx build . --file Dockerfile --tag ghcr.io/prashantdivate/yoctobuilder:latest
+          docker push ghcr.io/prashantdivate/yoctobuilder:latest
