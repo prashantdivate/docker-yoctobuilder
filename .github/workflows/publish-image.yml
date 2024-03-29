@@ -1,14 +1,7 @@
-name: Docker-yoctobuilder CI for GHCR
+name: Build yoctobuilder
 
 on:
   push
-
-env:
-  # Use docker.io for Docker Hub
-  REGISTRY: ghcr.io
-  IMAGE_NAME: yoctobuilder
-  IMAGE_TAG: 22.04
-
 
 jobs:
   build_and_publish:
@@ -22,4 +15,4 @@ jobs:
       - name: build and push the image
         run: |
           docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
-          docker buildx build . --file Dockerfile --tag ${{ REGISTRY}}/${{ github.actor }}/${{ IMAGE_NAME }}:${{ IMAGE_TAG }}
+          docker buildx build . --file Dockerfile --tag ghcr.io/prashantdivate/yoctobuilder:22.04
