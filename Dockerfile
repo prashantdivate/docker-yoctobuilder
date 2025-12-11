@@ -11,9 +11,11 @@ RUN apt-get update && apt-get install -y \
         libsdl1.2-dev xterm curl locales iputils-ping \
         openjdk-8-jdk flex bison antlr3 libantlr3c-dev maven python3-dev \
         libcurl4 screen xvfb zstd liblz4-tool ostree ostree-push file \
-        cython3 libjson-c-dev libcurl4-openssl-dev libacl1 libgnutls28-dev
+        cython3 libjson-c-dev libcurl4-openssl-dev libacl1 libgnutls28-dev \
+        # AWS & container based infrastructure dependencies
+        skopeo awscli podman fakeroot e2fsprogs rsync python3-gi gir1.2-ostree-1.0 python3-requests
 
-RUN pip3 install toml click dicttoxml pyyaml \
+RUN pip3 install toml click dicttoxml pyyaml kas \
          build mypy==0.910 types-setuptools pylint==2.9.3 typing-extensions==4.3.0 packaging==20.9 pyparsing==2.3.1 cython==3.0.2
 
 RUN wget -qO - https://releases.jfrog.io/artifactory/jfrog-gpg-public/jfrog_public_gpg.key | apt-key add -
