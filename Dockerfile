@@ -13,10 +13,18 @@ RUN apt-get update && apt-get install -y \
         libcurl4 screen xvfb zstd liblz4-tool ostree ostree-push file \
         cython3 libjson-c-dev libcurl4-openssl-dev libacl1 libgnutls28-dev \
         # AWS & container based infrastructure dependencies
-        skopeo awscli podman fakeroot e2fsprogs rsync python3-gi gir1.2-ostree-1.0 python3-requests
+        skopeo awscli podman fakeroot e2fsprogs rsync python3-gi gir1.2-ostree-1.0 python3-requests sshpass openssh-client \
+        fuse-overlayfs \
+        uidmap \
+        containernetworking-plugins \
+        && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install toml click dicttoxml pyyaml kas \
          build mypy==0.910 types-setuptools pylint==2.9.3 typing-extensions==4.3.0 packaging==20.9 pyparsing==2.3.1 cython==3.0.2
+
+COPY --chmod=0755 ostree-push /usr/bin/ostree-push
+RUN chmod 0755 /usr/bin/ostree-push && \
+    ln -sf /usr/bin/ostree-push /usr/bin/ostree-receive
 
 RUN wget -qO - https://releases.jfrog.io/artifactory/jfrog-gpg-public/jfrog_public_gpg.key | apt-key add -
 RUN echo "deb https://releases.jfrog.io/artifactory/jfrog-debs focal contrib" | tee -a /etc/apt/sources.list;
@@ -36,6 +44,10 @@ RUN mkdir -p /home/worker && \
     chown worker:worker -R /home/worker
 
 RUN ln -sfn /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+
+RUN mkdir -p /etc/containers /root/.config/containers && \
+    printf '[storage]\ndriver = "overlay"\nrunroot = "/run/containers/storage"\ngraphroot = "/var/lib/containers/storage"\n\n[storage.options.overlay]\nmount_program = "/usr/bin/fuse-overlayfs"\n' > /etc/containers/storage.conf && \
+    cp /etc/containers/storage.conf /root/.config/containers/storage.conf
 
 USER worker
 ENV HOME /home/worker
